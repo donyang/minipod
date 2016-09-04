@@ -1,0 +1,23 @@
+{
+  "name": "minipod",
+  "version": "0.1.0",
+  "description": "Customize cocoapods specs for just you need.",
+  "main": "index.js",
+  "bin": {"minipod": "bin/minipod.js"},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DonYang/minipod.git"
+  },
+  "keywords": [
+    "CocoaPods"
+  ],
+  "author": "DonYang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DonYang/minipod/issues"
+  },
+  "homepage": "https://github.com/DonYang/minipod#readme"
+}
