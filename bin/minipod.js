@@ -21,7 +21,7 @@ function addSpecToRepo(repoName, podName, podVersion) {
   const file = podDir + "/" + podName + ".podspec.json";
   var git = simpleGit(homedir + '/.cocoapods/repos/' + repoName);
 
-  git.add(file);
+  git.add(".");
   git.commit("add " + podName + "[" + podVersion + "]");
   git.push();
   log("install " + podName + "[" + podVersion + "] success");
@@ -40,8 +40,9 @@ function downloadSpec(repoName, podName, podVersion) {
         var file = fs.createWriteStream(podDir + "/" + podName + ".podspec.json");
         var request = https.get(specDownloadUrl, function(response) {
           response.pipe(file);
-          log("print file: "+file);
-          log("pod["+podName+"("+podVersion+")] install success");
+          log("pod["+podName+"("+podVersion+")] download success");
+
+          addSpecToRepo(repoName, podName, podVersion);
         });
       });
   });
@@ -61,7 +62,6 @@ program
     const repoName = options.repo
     updateRepo(repoName);
     downloadSpec(repoName, podName, podVersion);
-    addSpecToRepo(repoName, podName, podVersion);
   });
 
 program
