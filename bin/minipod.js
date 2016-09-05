@@ -11,25 +11,13 @@ const log = console.log
 
 const specDownloadUrlFmt = "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/%s/%s/%s.podspec.json";
 
-function updateRepo(repoName) {
-  var git = simpleGit(homedir + '/.cocoapods/repos/'+repoName);
-  git.pull();
-}
-
-function addSpecToRepo(repoName, podName, podVersion) {
+function downloadSpecAndUpdate(repoName, podName, podVersion) {
+  const git = simpleGit(homedir + '/.cocoapods/repos/'+repoName);
   const podDir = homedir + "/.cocoapods/repos/" + repoName + "/Specs/" + podName + "/" + podVersion;
-  const file = podDir + "/" + podName + ".podspec.json";
-  var git = simpleGit(homedir + '/.cocoapods/repos/' + repoName);
+  const filePath = podDir + "/" + podName + ".podspec.json";
 
-  git.add(".");
-  git.commit("add " + podName + "[" + podVersion + "]");
-  git.push();
-  log("install " + podName + "[" + podVersion + "] success");
-}
-
-function downloadSpec(repoName, podName, podVersion) {
-  const podDir = homedir + "/.cocoapods/repos/" + repoName + "/Specs/" + podName + "/" + podVersion;
-  fs.access(podDir, fs.F_OK, function(err) {
+  git.pull(function(){
+    fs.access(podDir, fs.F_OK, function(err) {
       mkdirp(podDir, function(err) {
         if(err) {
           console.error(err);
@@ -42,10 +30,17 @@ function downloadSpec(repoName, podName, podVersion) {
           response.pipe(file);
           log("pod["+podName+"("+podVersion+")] download success");
 
-          addSpecToRepo(repoName, podName, podVersion);
+          git.add(".", function(){
+            git.commit("add " + podName + "[" + podVersion + "]", function(){
+              git.push(function(){
+                log("install " + podName + "[" + podVersion + "] success");
+              })
+            });
+          });
         });
       });
-  });
+    });
+  }); 
 }
 
 program
@@ -60,8 +55,8 @@ program
     }
 
     const repoName = options.repo
-    updateRepo(repoName);
-    downloadSpec(repoName, podName, podVersion);
+    const git = simpleGit(homedir + '/.cocoapods/repos/'+repoName);
+    downloadSpecAndUpdate(repoName, podName, podVersion, git);
   });
 
 program
