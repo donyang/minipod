@@ -1,12 +1,19 @@
 {
   "name": "minipod",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Customize cocoapods specs for just you need.",
   "main": "index.js",
   "bin": {"minipod": "bin/minipod.js"},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "commander": "*",
+    "simple-git": "*",
+    "homedir": "*",
+    "mkdirp": "*",
+    "util": "*"
+  }
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DonYang/minipod.git"
