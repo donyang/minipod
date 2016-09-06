@@ -13,7 +13,7 @@
     "homedir": "*",
     "mkdirp": "*",
     "util": "*"
-  }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DonYang/minipod.git"
