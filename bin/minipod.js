@@ -27,13 +27,22 @@ function downloadSpecAndUpdate(repoName, podName, podVersion) {
         const specDownloadUrl = util.format(specDownloadUrlFmt, podName, podVersion, podName);
         var file = fs.createWriteStream(podDir + "/" + podName + ".podspec.json");
         var request = https.get(specDownloadUrl, function(response) {
+          if(response.statusCode == 404){
+            log("pod "+podName+"["+podVersion+")] not exits!");
+            return
+          }
+
+          if (response.statusCode !== 200){
+            log("pod "+podName+"["+podVersion+")] download failure");
+            return
+          }
           response.pipe(file);
-          log("pod["+podName+"("+podVersion+")] download success");
+          log("pod "+podName+"["+podVersion+")] download success");
 
           git.add(".", function(){
             git.commit("add " + podName + "[" + podVersion + "]", function(){
               git.push(function(){
-                log("install " + podName + "[" + podVersion + "] success");
+                log("pod " + podName + "[" + podVersion + "] install success");
               })
             });
           });
