@@ -7,15 +7,18 @@ const https = require('https');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const util = require('util');
+const isThere = require("is-there");
 const log = console.log
 
 const specDownloadUrlFmt = "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/%s/%s/%s.podspec.json";
+const reposDir = homedir + '/.cocoapods/repos';
+const podSpecPathFmt = 'Specs/%s/%s';
+const podSpecFilePostfix = ".podspec.json";
 
-function downloadSpecAndUpdate(repoName, podName, podVersion) {
-  const git = simpleGit(homedir + '/.cocoapods/repos/'+repoName);
-  const podDir = homedir + "/.cocoapods/repos/" + repoName + "/Specs/" + podName + "/" + podVersion;
-  const filePath = podDir + "/" + podName + ".podspec.json";
-
+function downloadSpecAndUpdate(podName, podVersion, repoDir) {
+  const git = simpleGit(repoDir);
+  const podDir = repoDir + "/Specs/" + podName + "/" + podVersion;
+  
   git.pull(function(){
     fs.access(podDir, fs.F_OK, function(err) {
       mkdirp(podDir, function(err) {
@@ -25,10 +28,11 @@ function downloadSpecAndUpdate(repoName, podName, podVersion) {
         }
         
         const specDownloadUrl = util.format(specDownloadUrlFmt, podName, podVersion, podName);
-        var file = fs.createWriteStream(podDir + "/" + podName + ".podspec.json");
+        const podFilePath = podDir + "/" + podName + podSpecFilePostfix;
+        var file = fs.createWriteStream(podFilePath);
         var request = https.get(specDownloadUrl, function(response) {
-          if(response.statusCode == 404){
-            log("pod "+podName+"["+podVersion+"] not exits!");
+          if(response.statusCode === 404){
+            log("pod "+podName+"["+podVersion+"] not exists!");
             return
           }
 
@@ -64,8 +68,13 @@ program
     }
 
     const repoName = options.repo
-    const git = simpleGit(homedir + '/.cocoapods/repos/'+repoName);
-    downloadSpecAndUpdate(repoName, podName, podVersion, git);
+    const repoDir = reposDir + '/' + repoName
+    if (!isThere(repoDir)) {
+      log("repo["+repoName+"] not exist in ~/.cocoapods/repos")
+      return;
+    }
+
+    downloadSpecAndUpdate(podName, podVersion, repoDir);
   });
 
 program
@@ -76,6 +85,8 @@ program
     log('    $ minipod add AFNetworking 3.1.0 -r 18plan');
     log();
   });
+
+
 
 program.parse(process.argv);
 
