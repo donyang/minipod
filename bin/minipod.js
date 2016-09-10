@@ -20,7 +20,11 @@ function getGithubRawContentUrl(podName, podVersion) {
 }
 
 function getLocalSpecPatch(repoName, podName, podVersion) {
-  return reposDir + '/' + repoName + getPodSpecPath(podName, podVersion);
+  return getRepoDir(repoName) + getPodSpecPath(podName, podVersion);
+}
+
+function getLocalSpecDir(repoName, podName, podVersion) {
+  return getRepoDir(repoName) + "/" +util.format(podSpecPathFmt, podName, podVersion);
 }
 
 function getPodSpecPath(podName, podVersion) {
@@ -34,7 +38,7 @@ function getRepoDir(repoName) {
 
 function downloadSpecAndUpdate(repoName, podName, podVersion) {
   const git = simpleGit(getRepoDir(repoName));
-  const podDir = repoDir + "/" +util.format(podSpecPathFmt, podName, podVersion);
+  const podDir = getLocalSpecDir(repoName, podName, podVersion);
   
   git.pull(function(){
     fs.access(podDir, fs.F_OK, function(err) {
