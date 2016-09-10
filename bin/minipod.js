@@ -68,7 +68,8 @@ function downloadSpecAndUpdate(repoName, podName, podVersion) {
             git.commit("add " + podName + "[" + podVersion + "]", function(){
               git.push(function(){
                 log("pod " + podName + "[" + podVersion + "] install success");
-              })
+                // TODO use promise
+              });
             });
           });
         });
