@@ -10,14 +10,31 @@ const util = require('util');
 const isThere = require("is-there");
 const log = console.log
 
-const specDownloadUrlFmt = "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/%s/%s/%s.podspec.json";
 const reposDir = homedir + '/.cocoapods/repos';
 const podSpecPathFmt = 'Specs/%s/%s';
 const podSpecFilePostfix = ".podspec.json";
+const githubBaseUrl = "https://raw.githubusercontent.com/CocoaPods/Specs/master";
 
-function downloadSpecAndUpdate(podName, podVersion, repoDir) {
-  const git = simpleGit(repoDir);
-  const podDir = repoDir + "/Specs/" + podName + "/" + podVersion;
+function getGithubRawContentUrl(podName, podVersion) {
+  return githubBaseUrl + getPodSpecPath(podName, podVersion);
+}
+
+function getLocalSpecPatch(repoName, podName, podVersion) {
+  return reposDir + '/' + repoName + getPodSpecPath(podName, podVersion);
+}
+
+function getPodSpecPath(podName, podVersion) {
+  var pathFmt = "/" + podSpecPathFmt + '/%s' + podSpecFilePostfix;
+  return util.format(pathFmt, podName, podVersion, podName);
+}
+
+function getRepoDir(repoName) {
+  return reposDir + '/' + repoName;
+}
+
+function downloadSpecAndUpdate(repoName, podName, podVersion) {
+  const git = simpleGit(getRepoDir(repoName));
+  const podDir = repoDir + "/" +util.format(podSpecPathFmt, podName, podVersion);
   
   git.pull(function(){
     fs.access(podDir, fs.F_OK, function(err) {
@@ -27,8 +44,8 @@ function downloadSpecAndUpdate(podName, podVersion, repoDir) {
           return;
         }
         
-        const specDownloadUrl = util.format(specDownloadUrlFmt, podName, podVersion, podName);
-        const podFilePath = podDir + "/" + podName + podSpecFilePostfix;
+        const specDownloadUrl = getGithubRawContentUrl(podName, podVersion);
+        const podFilePath = getLocalSpecPatch(repoName, podName, podVersion);
         var file = fs.createWriteStream(podFilePath);
         var request = https.get(specDownloadUrl, function(response) {
           if(response.statusCode === 404){
@@ -68,13 +85,12 @@ program
     }
 
     const repoName = options.repo
-    const repoDir = reposDir + '/' + repoName
-    if (!isThere(repoDir)) {
+    if (!isThere(getRepoDir(repoName))) {
       log("repo["+repoName+"] not exist in ~/.cocoapods/repos")
       return;
     }
 
-    downloadSpecAndUpdate(podName, podVersion, repoDir);
+    downloadSpecAndUpdate(repoName, podName, podVersion);
   });
 
 program
