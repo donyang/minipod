@@ -28,16 +28,16 @@ function downloadSpecAndUpdate(repoName, podName, podVersion) {
         var file = fs.createWriteStream(podDir + "/" + podName + ".podspec.json");
         var request = https.get(specDownloadUrl, function(response) {
           if(response.statusCode == 404){
-            log("pod "+podName+"["+podVersion+")] not exits!");
+            log("pod "+podName+"["+podVersion+"] not exits!");
             return
           }
 
           if (response.statusCode !== 200){
-            log("pod "+podName+"["+podVersion+")] download failure");
+            log("pod "+podName+"["+podVersion+"] download failure");
             return
           }
           response.pipe(file);
-          log("pod "+podName+"["+podVersion+")] download success");
+          log("pod "+podName+"["+podVersion+"] download success");
 
           git.add(".", function(){
             git.commit("add " + podName + "[" + podVersion + "]", function(){
