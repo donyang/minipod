@@ -1,6 +1,6 @@
 {
   "name": "minipod",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Customize cocoapods specs for just you need.",
   "main": "index.js",
   "bin": {"minipod": "bin/minipod.js"},

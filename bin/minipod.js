@@ -33,7 +33,7 @@ function getLocalSpecDir(repoName, podName, podVersion) {
 function getOfficalPodSpecPath(podName, podVersion) {
   const md5Str = md5(podName)
   var pathFmt = "/" + podSpecPathFmt + '/%s/%s/%s/%s' + podSpecFilePostfix;
-  return util.format(pathFmt, md5PodName.charAt(0), md5PodName.charAt(1), md5PodName.charAt(2), podName, podVersion, podName);
+  return util.format(pathFmt, md5Str.charAt(0), md5Str.charAt(1), md5Str.charAt(2), podName, podVersion, podName);
 }
 
 function getPodSpecPath(podName, podVersion) {
