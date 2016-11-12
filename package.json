@@ -1,6 +1,6 @@
 {
   "name": "minipod",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Customize cocoapods specs for just you need.",
   "main": "index.js",
   "bin": {"minipod": "bin/minipod.js"},
@@ -13,7 +13,8 @@
     "homedir": "*",
     "mkdirp": "*",
     "util": "*",
-    "is-there": "*"
+    "is-there": "*",
+    "js-md5": "*"
   },
   "repository": {
     "type": "git",

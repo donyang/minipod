@@ -8,6 +8,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const util = require('util');
 const isThere = require("is-there");
+const md5 = require('js-md5');
 const log = console.log
 
 const reposDir = homedir + '/.cocoapods/repos';
@@ -16,7 +17,7 @@ const podSpecFilePostfix = ".podspec.json";
 const githubBaseUrl = "https://raw.githubusercontent.com/CocoaPods/Specs/master";
 
 function getGithubRawContentUrl(podName, podVersion) {
-  return githubBaseUrl + getPodSpecPath(podName, podVersion);
+  return githubBaseUrl + getOfficalPodSpecPath(podName, podVersion);
 }
 
 function getLocalSpecPatch(repoName, podName, podVersion) {
@@ -25,6 +26,14 @@ function getLocalSpecPatch(repoName, podName, podVersion) {
 
 function getLocalSpecDir(repoName, podName, podVersion) {
   return getRepoDir(repoName) + "/" +util.format(podSpecPathFmt, podName, podVersion);
+}
+
+/* cocoapods use md5 digest prefix */
+/* private repo do not need this, it's not obviously if some pod is installed or not */
+function getOfficalPodSpecPath(podName, podVersion) {
+  const md5Str = md5(podName)
+  var pathFmt = "/" + podSpecPathFmt + '/%s/%s/%s/%s' + podSpecFilePostfix;
+  return util.format(pathFmt, md5PodName.charAt(0), md5PodName.charAt(1), md5PodName.charAt(2), podName, podVersion, podName);
 }
 
 function getPodSpecPath(podName, podVersion) {
